@@ -112,7 +112,32 @@ ${userNeed}
 
     const ripple = JSON.parse(text);
 
-    return NextResponse.json(ripple);
+console.log("🗄️ Saving Ripple to Supabase...");
+
+const { data, error } = await supabase
+  .from("ripples")
+  .insert({
+    category: ripple.category,
+    title: ripple.title,
+    description: ripple.description,
+    impact: ripple.impact,
+    urgency: ripple.urgency,
+    progress: 0,
+    contributors: 0,
+    location: "Community",
+  })
+  .select()
+  .single();
+
+if (error) {
+  console.error(" Supabase error:", error);
+
+  throw new Error(`Database error: ${error.message}`);
+}
+
+console.log(" Ripple saved:", data.id);
+
+return NextResponse.json(data);
   } catch (error) {
     console.error("Ripple AI error:", error);
 
